@@ -1,6 +1,6 @@
 #include "graphUtils.hpp"
 #include "weightedGraph.hpp"
-
+#include <iostream>
 #include <vector>
 #include <unordered_map>
 #include <functional>
@@ -49,11 +49,35 @@ std::unordered_map<IDType, std::pair<float, IDType>> Dijkstra(WeightedGraph cons
     // priority queue of pair of current cost from starting node and current node id
     // this will sort node base on the cost (as pair are ordered with lexicographical order)
     min_priority_queue<std::pair<float, IDType>> to_visit {};
-
-    to_visit.push({0.0f, start});
-
-    /* TODO */
     
+    to_visit.push({0.0f, start});
+    distances[start] = {0.0f, start};
+        while (!to_visit.empty()) {
+        auto const [current_cost, current_node] = to_visit.top();
+        to_visit.pop();
+
+        if (current_cost > distances[current_node].first) {
+            continue;
+        }
+
+        if (current_node == end) {
+            break;
+        }
+
+        for (auto const& edge : graph.get_neighbors(current_node)) {
+            float const new_cost = current_cost + static_cast<float>(edge.weight);
+
+            auto const it = distances.find(edge.to);
+            bool const not_visited = (it == distances.end());
+            bool const cheaper = !not_visited && (new_cost < it->second.first);
+
+            if (not_visited || cheaper) {
+                distances[edge.to] = {new_cost, current_node};
+                to_visit.push({new_cost, edge.to});
+            }
+        }
+    }
+
     return distances;
 }
 
