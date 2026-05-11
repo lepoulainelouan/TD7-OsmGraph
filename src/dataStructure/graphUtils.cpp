@@ -59,7 +59,6 @@ std::unordered_map<IDType, std::pair<float, IDType>> Dijkstra(WeightedGraph cons
         if (current_cost > distances[current_node].first) {
             continue;
         }
-
         if (current_node == end) {
             break;
         }
